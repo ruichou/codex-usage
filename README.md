@@ -50,7 +50,7 @@ macOS：
 
 ```bash
 python3 -m pip install pyinstaller
-python3 -m PyInstaller --noconfirm --clean --windowed --name CodexUsageWidget usage_widget.py
+python3 -m PyInstaller --noconfirm --clean --windowed --icon assets/codex-usage.icns --name CodexUsageWidget usage_widget.py
 ```
 
 推送版本标签后，GitHub Actions 会自动构建 Windows、Intel macOS 和 Apple Silicon macOS 包，并发布到 GitHub Release：

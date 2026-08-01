@@ -13,6 +13,7 @@ $shortcutPath = Join-Path $desktopPath "Codex usage widget.lnk"
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = $exePath
+$shortcut.IconLocation = "$exePath,0"
 $shortcut.WorkingDirectory = $installDir
 $shortcut.Description = "显示 Codex 当前套餐剩余用量"
 $shortcut.Save()
