@@ -27,6 +27,16 @@ class UsageWidgetTests(unittest.TestCase):
         self.assertEqual(progress_color(10), "#f2b84b")
         self.assertEqual(progress_color(9), "#ef6b73")
 
+    def test_reset_text_has_no_capsule_surface(self):
+        renderer = Progress3D(None, size=180)
+        renderer.set_state(97, "Plus · 可用", "6天 20小时后重置")
+        self.assertFalse(renderer.time_capsule)
+
+    def test_renderer_clips_pixels_outside_orb(self):
+        renderer = Progress3D(None, size=180)
+        image = renderer.render()
+        self.assertEqual(image.getpixel((0, 0))[3], 0)
+
     def test_text_is_rendered_on_canvas_without_widget_background(self):
         self.assertEqual(TEXT_RENDERER, "pillow")
 

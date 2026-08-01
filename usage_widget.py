@@ -7,7 +7,7 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import tkinter as tk
-from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageTk
+from PIL import Image, ImageChops, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageTk
 
 USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 REFRESH_MS = 30_000
@@ -77,6 +77,7 @@ class Progress3D:
         self.status = "读取中…"
         self.reset_text = ""
         self.color = progress_color(0)
+        self.time_capsule = False
         self._photo = None
         self._item = None
         if canvas is not None:
@@ -174,15 +175,11 @@ class Progress3D:
         draw.text(number_position, percent, anchor="mm", font=number_font, fill=ImageColor.getrgb(self.color), stroke_width=1 * scale, stroke_fill=(99, 255, 190, 150))
         draw.text((center, center + 22 * scale), self.status, anchor="mm", font=small_font, fill=(226, 238, 250, 235))
 
-        capsule = (center - 65 * scale, center + 34 * scale, center + 65 * scale, center + 57 * scale)
-        capsule_glow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-        capsule_draw = ImageDraw.Draw(capsule_glow)
-        capsule_draw.rounded_rectangle(capsule, radius=11 * scale, fill=(24, 108, 255, 150))
-        image = Image.alpha_composite(image, capsule_glow.filter(ImageFilter.GaussianBlur(8 * scale)))
-        draw = ImageDraw.Draw(image)
-        draw.rounded_rectangle(capsule, radius=11 * scale, fill=(16, 46, 91, 210), outline=(83, 153, 255, 230), width=1 * scale)
         draw.text((center, center + 45 * scale), self.reset_text or "重置时间未知", anchor="mm", font=tiny_font, fill=(220, 235, 255, 235))
 
+        orb_mask = Image.new("L", (size, size), 0)
+        ImageDraw.Draw(orb_mask).ellipse(box(outer + scale), fill=255)
+        image.putalpha(ImageChops.multiply(image.getchannel("A"), orb_mask))
         final_image = image.resize((self.size, self.size), Image.Resampling.LANCZOS)
         if self.canvas is not None:
             self._photo = ImageTk.PhotoImage(final_image)
