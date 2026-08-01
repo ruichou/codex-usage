@@ -12,7 +12,7 @@
 irm https://raw.githubusercontent.com/ruichou/codex-usage/main/install.ps1 | iex
 ```
 
-脚本会自动下载、安装并启动程序。程序需要你的电脑已经登录 Codex。
+脚本会自动下载、创建桌面快捷方式并启动程序。程序需要你的电脑已经登录过 Codex，但不需要先打开 Codex 桌面端。
 
 ### macOS
 
