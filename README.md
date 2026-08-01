@@ -24,8 +24,9 @@ macOS 安装包会在 GitHub Release 中自动生成，包含 Intel 和 Apple Si
 
 ## 使用说明
 
-- 横向 3D 胶囊样式
-- 突出显示剩余百分比和粗进度条
+- 3D 玻璃拟态 HUD 圆形进度组件
+- 金属外圈、发光进度环和蓝色时间胶囊
+- 突出显示剩余百分比和状态文字
 - 用量越低，进度条和百分比颜色越偏橙/红
 - 每 30 秒自动刷新
 - 支持拖动、缩小和关闭
@@ -42,14 +43,14 @@ python usage_widget.py
 Windows：
 
 ```powershell
-python -m pip install pyinstaller
+python -m pip install pillow pyinstaller
 .\build.ps1
 ```
 
 macOS：
 
 ```bash
-python3 -m pip install pyinstaller
+python3 -m pip install pillow pyinstaller
 python3 -m PyInstaller --noconfirm --clean --windowed --icon assets/codex-usage.icns --name CodexUsageWidget usage_widget.py
 ```
 

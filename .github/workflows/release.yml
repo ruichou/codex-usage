@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install build tools
-        run: python -m pip install --upgrade pyinstaller
+        run: python -m pip install --upgrade pillow pyinstaller
       - name: Build executable
         run: python -m PyInstaller --noconfirm --clean --onefile --windowed --icon assets/codex-usage.ico --name CodexUsageWidget usage_widget.py
       - name: Rename artifact
@@ -46,7 +46,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install build tools
-        run: python -m pip install --upgrade pyinstaller
+        run: python -m pip install --upgrade pillow pyinstaller
       - name: Build app
         run: python -m PyInstaller --noconfirm --clean --windowed --icon assets/codex-usage.icns --name CodexUsageWidget usage_widget.py
       - name: Package app

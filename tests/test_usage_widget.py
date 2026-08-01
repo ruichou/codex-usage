@@ -1,16 +1,38 @@
 import unittest
 from datetime import datetime, timezone
 
-from usage_widget import parse_usage, format_reset, WIDGET_SIZE, SPHERE_BOX, TEXT_RENDERER
+from usage_widget import (
+    Progress3D,
+    format_reset,
+    parse_usage,
+    progress_color,
+    SPHERE_BOX,
+    TEXT_RENDERER,
+    WIDGET_SIZE,
+)
 
 
 class UsageWidgetTests(unittest.TestCase):
+    def test_progress3d_clamps_state_and_preserves_copy(self):
+        renderer = Progress3D(None, size=116)
+        renderer.set_state(125, "Plus · 可用", "6天 20小时后重置")
+
+        self.assertEqual(renderer.progress, 100)
+        self.assertEqual(renderer.status, "Plus · 可用")
+        self.assertEqual(renderer.reset_text, "6天 20小时后重置")
+
+    def test_progress_color_matches_usage_thresholds(self):
+        self.assertEqual(progress_color(70), "#45d483")
+        self.assertEqual(progress_color(30), "#4da3ff")
+        self.assertEqual(progress_color(10), "#f2b84b")
+        self.assertEqual(progress_color(9), "#ef6b73")
+
     def test_text_is_rendered_on_canvas_without_widget_background(self):
-        self.assertEqual(TEXT_RENDERER, "canvas")
+        self.assertEqual(TEXT_RENDERER, "pillow")
 
     def test_orb_layout_has_transparent_outer_ring(self):
-        self.assertEqual(WIDGET_SIZE, 116)
-        self.assertEqual(SPHERE_BOX, (10, 10, 106, 106))
+        self.assertEqual(WIDGET_SIZE, 180)
+        self.assertEqual(SPHERE_BOX, (10, 10, 170, 170))
         self.assertGreater(SPHERE_BOX[0], 0)
 
     def test_parse_usage_returns_remaining_percent_and_plan(self):
