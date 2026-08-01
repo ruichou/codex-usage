@@ -1,22 +1,26 @@
 # Codex usage widget
 
-一个轻量的 Windows 悬浮窗，用来显示当前 Codex 套餐周期的剩余用量。
+一个轻量的 Windows / macOS 悬浮窗，用来显示当前 Codex 套餐周期的剩余用量。
 
 ## 普通用户安装
 
-请在 PowerShell 中运行下面这一行：
+### Windows
+
+请在 PowerShell 中运行：
 
 ```powershell
 irm https://raw.githubusercontent.com/ruichou/codex-usage/main/install.ps1 | iex
 ```
 
-脚本会把程序安装到：
+脚本会自动下载、安装并启动程序。程序需要你的电脑已经登录 Codex。
 
-```text
-%LOCALAPPDATA%\CodexUsageWidget\CodexUsageWidget.exe
-```
+### macOS
 
-然后自动启动悬浮窗。程序需要你的电脑已经登录 Codex。
+macOS 安装包会在 GitHub Release 中自动生成，包含 Intel 和 Apple Silicon 两个版本：
+
+[下载 macOS 版本](https://github.com/ruichou/codex-usage/releases)
+
+下载对应架构的 `.zip`，解压后将 `CodexUsageWidget.app` 拖到“应用程序”文件夹，再双击启动。首次启动如遇到安全提示，请在“系统设置 → 隐私与安全性”中允许打开。
 
 ## 使用说明
 
@@ -35,16 +39,30 @@ python usage_widget.py
 
 ## 本地打包
 
+Windows：
+
 ```powershell
 python -m pip install pyinstaller
 .\build.ps1
 ```
 
-生成的文件位于 `dist\CodexUsageWidget.exe`。
+macOS：
+
+```bash
+python3 -m pip install pyinstaller
+python3 -m PyInstaller --noconfirm --clean --windowed --name CodexUsageWidget usage_widget.py
+```
+
+推送版本标签后，GitHub Actions 会自动构建 Windows、Intel macOS 和 Apple Silicon macOS 包，并发布到 GitHub Release：
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## 隐私和安全
 
-程序只读取当前 Windows 用户目录下的 Codex 登录状态，并向 Codex 用量接口请求当前账号的用量。认证信息不会写入项目文件，也不会上传到第三方服务。
+程序只读取当前用户目录下的 Codex 登录状态，并向 Codex 用量接口请求当前账号的用量。认证信息不会写入项目文件，也不会上传到第三方服务。
 
 这是 Codex 客户端当前使用的内部用量接口，未来可能随客户端更新而变化。
 
