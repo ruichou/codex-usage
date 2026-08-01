@@ -1,10 +1,15 @@
 import unittest
 from datetime import datetime, timezone
 
-from usage_widget import parse_usage, format_reset, WIDGET_SIZE, SPHERE_BOX
+from usage_widget import parse_usage, format_reset, WIDGET_SIZE, SPHERE_BOX, TEXT_LABEL_STYLE
 
 
 class UsageWidgetTests(unittest.TestCase):
+    def test_text_labels_have_no_frame_or_highlight(self):
+        self.assertEqual(TEXT_LABEL_STYLE["bd"], 0)
+        self.assertEqual(TEXT_LABEL_STYLE["highlightthickness"], 0)
+        self.assertEqual(TEXT_LABEL_STYLE["relief"], "flat")
+
     def test_orb_layout_has_transparent_outer_ring(self):
         self.assertEqual(WIDGET_SIZE, 116)
         self.assertEqual(SPHERE_BOX, (10, 10, 106, 106))

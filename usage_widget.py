@@ -11,6 +11,7 @@ USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 REFRESH_MS = 30_000
 WIDGET_SIZE = 116
 SPHERE_BOX = (10, 10, 106, 106)
+TEXT_LABEL_STYLE = {"bd": 0, "highlightthickness": 0, "relief": "flat"}
 
 
 @dataclass(frozen=True)
@@ -84,11 +85,11 @@ class UsageWidget:
         self.canvas.pack()
         self._draw_sphere()
 
-        self.percent = tk.Label(self.root, text="--", bg=self.surface, fg="#f4f7fb", font=("Segoe UI", 17, "bold"))
+        self.percent = tk.Label(self.root, text="--", bg=self.surface, fg="#f4f7fb", font=("Segoe UI", 17, "bold"), **TEXT_LABEL_STYLE)
         self.percent.place(x=24, y=38, width=68, height=24)
-        self.plan = tk.Label(self.root, text="读取中…", bg=self.surface, fg="#a7b1c2", font=("Segoe UI", 7))
+        self.plan = tk.Label(self.root, text="读取中…", bg=self.surface, fg="#a7b1c2", font=("Segoe UI", 7), **TEXT_LABEL_STYLE)
         self.plan.place(x=17, y=65, width=82, height=11)
-        self.reset = tk.Label(self.root, text="", bg=self.surface, fg="#7e8a9d", font=("Segoe UI", 7))
+        self.reset = tk.Label(self.root, text="", bg=self.surface, fg="#7e8a9d", font=("Segoe UI", 7), **TEXT_LABEL_STYLE)
         self.reset.place(x=14, y=78, width=88, height=10)
 
         button_style = {"bg": self.transparent, "fg": "#aab5c5", "activebackground": "#263246", "activeforeground": "#ffffff", "font": ("Segoe UI", 9), "cursor": "hand2"}
