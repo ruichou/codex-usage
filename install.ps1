@@ -3,8 +3,8 @@ $ErrorActionPreference = "Stop"
 $installDir = Join-Path $env:LOCALAPPDATA "CodexUsageWidget"
 $exePath = Join-Path $installDir "CodexUsageWidget.exe"
 $iconPath = Join-Path $installDir "codex-usage.ico"
-$downloadUrl = "https://raw.githubusercontent.com/ruichou/codex-usage/main/dist/CodexUsageWidget.exe"
-$iconUrl = "https://raw.githubusercontent.com/ruichou/codex-usage/main/assets/codex-usage.ico"
+$downloadUrl = "https://github.com/ruichou/codex-usage/raw/refs/heads/main/dist/CodexUsageWidget.exe"
+$iconUrl = "https://github.com/ruichou/codex-usage/raw/refs/heads/main/assets/codex-usage.ico"
 $tempExePath = Join-Path $env:TEMP ("CodexUsageWidget-" + [Guid]::NewGuid().ToString("N") + ".exe")
 $tempIconPath = Join-Path $env:TEMP ("CodexUsageWidget-" + [Guid]::NewGuid().ToString("N") + ".ico")
 

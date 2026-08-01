@@ -9,7 +9,7 @@
 请在 PowerShell 中运行：
 
 ```powershell
-irm https://raw.githubusercontent.com/ruichou/codex-usage/main/install.ps1 | iex
+irm https://github.com/ruichou/codex-usage/raw/refs/heads/main/install.ps1 | iex
 ```
 
 脚本会自动下载、创建桌面快捷方式并启动程序。程序需要你的电脑已经登录过 Codex，但不需要先打开 Codex 桌面端。
