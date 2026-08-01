@@ -9,7 +9,7 @@ $tempExePath = Join-Path $env:TEMP ("CodexUsageWidget-" + [Guid]::NewGuid().ToSt
 $tempIconPath = Join-Path $env:TEMP ("CodexUsageWidget-" + [Guid]::NewGuid().ToString("N") + ".ico")
 
 New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-Write-Host "正在下载 Codex usage widget..."
+Write-Host "Downloading Codex usage widget..."
 Invoke-WebRequest -Uri $downloadUrl -OutFile $tempExePath
 Invoke-WebRequest -Uri $iconUrl -OutFile $tempIconPath
 
@@ -31,7 +31,7 @@ $shortcut = $shell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = $exePath
 $shortcut.IconLocation = "$iconPath,0"
 $shortcut.WorkingDirectory = $installDir
-$shortcut.Description = "显示 Codex 当前套餐剩余用量"
+$shortcut.Description = "Show current Codex usage"
 $shortcut.Save()
 
 $iconRefresh = Join-Path $env:WINDIR "System32\ie4uinit.exe"
@@ -39,6 +39,6 @@ if (Test-Path -LiteralPath $iconRefresh) {
     Start-Process -FilePath $iconRefresh -ArgumentList "-show" -WindowStyle Hidden -Wait
 }
 
-Write-Host "已安装到 $installDir"
-Write-Host "桌面快捷方式已创建"
+Write-Host "Installed to $installDir"
+Write-Host "Desktop shortcut created"
 Start-Process -FilePath $exePath
