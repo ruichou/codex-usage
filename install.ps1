@@ -13,12 +13,25 @@ Write-Host "Downloading Codex usage widget..."
 Invoke-WebRequest -Uri $downloadUrl -OutFile $tempExePath
 Invoke-WebRequest -Uri $iconUrl -OutFile $tempIconPath
 
-$oldProcesses = Get-Process -Name "CodexUsageWidget" -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exePath }
-foreach ($process in $oldProcesses) {
-    Stop-Process -Id $process.Id -Force
+$oldProcesses = Get-Process -Name "CodexUsageWidget" -ErrorAction SilentlyContinue
+if ($oldProcesses) {
+    $oldProcesses | Stop-Process -Force
 }
 Start-Sleep -Milliseconds 500
-Move-Item -LiteralPath $tempExePath -Destination $exePath -Force
+
+$replaced = $false
+for ($attempt = 0; $attempt -lt 20; $attempt++) {
+    try {
+        Move-Item -LiteralPath $tempExePath -Destination $exePath -Force
+        $replaced = $true
+        break
+    } catch {
+        Start-Sleep -Milliseconds 250
+    }
+}
+if (-not $replaced) {
+    throw "无法替换正在使用的 CodexUsageWidget.exe，请关闭程序后重试。"
+}
 Move-Item -LiteralPath $tempIconPath -Destination $iconPath -Force
 
 $desktopPath = [Environment]::GetFolderPath("Desktop")
