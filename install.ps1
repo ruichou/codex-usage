@@ -15,7 +15,11 @@ Invoke-WebRequest -Uri $iconUrl -OutFile $tempIconPath
 
 $oldProcesses = Get-Process -Name "CodexUsageWidget" -ErrorAction SilentlyContinue
 if ($oldProcesses) {
-    $oldProcesses | Stop-Process -Force
+    try {
+        $oldProcesses | Stop-Process -Force -ErrorAction Stop
+    } catch {
+        throw "CodexUsageWidget is running with elevated permissions. Close it with the X button, then run the installer again."
+    }
 }
 Start-Sleep -Milliseconds 500
 
@@ -47,7 +51,9 @@ $shortcut.WorkingDirectory = $installDir
 $shortcut.Description = "Show current Codex usage"
 $shortcut.Save()
 
-$iconRefresh = Join-Path $env:WINDIR "System32\ie4uinit.exe"
+$windowsDir = [Environment]::GetEnvironmentVariable("WINDIR")
+if (-not $windowsDir) { $windowsDir = "C:\Windows" }
+$iconRefresh = Join-Path $windowsDir "System32\ie4uinit.exe"
 if (Test-Path -LiteralPath $iconRefresh) {
     Start-Process -FilePath $iconRefresh -ArgumentList "-show" -WindowStyle Hidden -Wait
 }
