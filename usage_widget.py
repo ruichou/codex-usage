@@ -11,7 +11,7 @@ USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 REFRESH_MS = 30_000
 WIDGET_SIZE = 116
 SPHERE_BOX = (10, 10, 106, 106)
-TEXT_LABEL_STYLE = {"bd": 0, "highlightthickness": 0, "relief": "flat"}
+TEXT_RENDERER = "canvas"
 
 
 @dataclass(frozen=True)
@@ -76,6 +76,9 @@ class UsageWidget:
         self._drag_offset = (0, 0)
         self._progress = 0
         self._progress_color = "#45d483"
+        self._percent_text = "--"
+        self._plan_text = "读取中…"
+        self._reset_text = ""
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self.root.destroy)
         self.refresh()
@@ -85,13 +88,6 @@ class UsageWidget:
         self.canvas.pack()
         self._draw_sphere()
 
-        self.percent = tk.Label(self.root, text="--", bg=self.surface, fg="#f4f7fb", font=("Segoe UI", 17, "bold"), **TEXT_LABEL_STYLE)
-        self.percent.place(x=24, y=38, width=68, height=24)
-        self.plan = tk.Label(self.root, text="读取中…", bg=self.surface, fg="#a7b1c2", font=("Segoe UI", 7), **TEXT_LABEL_STYLE)
-        self.plan.place(x=17, y=65, width=82, height=11)
-        self.reset = tk.Label(self.root, text="", bg=self.surface, fg="#7e8a9d", font=("Segoe UI", 7), **TEXT_LABEL_STYLE)
-        self.reset.place(x=14, y=78, width=88, height=10)
-
         button_style = {"bg": self.transparent, "fg": "#aab5c5", "activebackground": "#263246", "activeforeground": "#ffffff", "font": ("Segoe UI", 9), "cursor": "hand2"}
         self.minimize = tk.Label(self.root, text="−", **button_style)
         self.minimize.place(x=91, y=1, width=12, height=14)
@@ -100,9 +96,8 @@ class UsageWidget:
         self.close.place(x=103, y=1, width=12, height=14)
         self.minimize.bind("<Button-1>", lambda _event: self.root.iconify())
         self.close.bind("<Button-1>", lambda _event: self.root.destroy())
-        for widget in (self.canvas, self.percent, self.plan, self.reset):
-            widget.bind("<ButtonPress-1>", self._drag_start)
-            widget.bind("<B1-Motion>", self._drag_move)
+        self.canvas.bind("<ButtonPress-1>", self._drag_start)
+        self.canvas.bind("<B1-Motion>", self._drag_move)
 
     def _draw_sphere(self):
         self.canvas.delete("all")
@@ -114,6 +109,12 @@ class UsageWidget:
         self.canvas.create_arc(left + 8, top + 8, right - 8, bottom - 8, start=90, extent=359, style="arc", outline="#2a3545", width=8)
         if self._progress > 0:
             self.canvas.create_arc(left + 8, top + 8, right - 8, bottom - 8, start=90, extent=-3.6 * self._progress, style="arc", outline=self._progress_color, width=8)
+        self._draw_text()
+
+    def _draw_text(self):
+        self.canvas.create_text(58, 52, text=self._percent_text, fill=self._progress_color if self._percent_text != "--" else "#f4f7fb", font=("Segoe UI", 17, "bold"))
+        self.canvas.create_text(58, 73, text=self._plan_text, fill="#a7b1c2", font=("Segoe UI", 7))
+        self.canvas.create_text(58, 85, text=self._reset_text, fill="#7e8a9d", font=("Segoe UI", 7))
 
     def _drag_start(self, event):
         self._drag_offset = (event.x_root - self.root.winfo_x(), event.y_root - self.root.winfo_y())
@@ -136,19 +137,20 @@ class UsageWidget:
     def _show_snapshot(self, snapshot: UsageSnapshot, reset_after: int | None):
         remaining = snapshot.remaining_percent
         color = "#45d483" if remaining >= 70 else "#4da3ff" if remaining >= 30 else "#f2b84b" if remaining >= 10 else "#ef6b73"
-        self.percent.config(text=f"{remaining}%", fg=color)
+        self._percent_text = f"{remaining}%"
+        self._plan_text = f"{snapshot.plan} · {'可用' if snapshot.allowed else '受限'}"
+        self._reset_text = format_reset(reset_after)
         self._progress = remaining
         self._progress_color = color
         self._draw_sphere()
-        self.plan.config(text=f"{snapshot.plan} · {'可用' if snapshot.allowed else '受限'}")
-        self.reset.config(text=format_reset(reset_after))
 
     def _show_error(self, message: str):
-        self.percent.config(text="--", fg="#ef6b73")
+        self._percent_text = "--"
+        self._plan_text = "暂时无法读取"
+        self._reset_text = message[:16] or "请检查登录"
         self._progress = 0
+        self._progress_color = "#ef6b73"
         self._draw_sphere()
-        self.plan.config(text="暂时无法读取")
-        self.reset.config(text=message[:16] or "请检查登录")
 
 
 def main():
