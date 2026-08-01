@@ -9,6 +9,8 @@ import tkinter as tk
 
 USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 REFRESH_MS = 30_000
+WIDGET_SIZE = 116
+SPHERE_BOX = (10, 10, 106, 106)
 
 
 @dataclass(frozen=True)
@@ -62,7 +64,7 @@ class UsageWidget:
         self.surface = "#171c25"
         self.transparent = "#05080d"
         self.root.overrideredirect(True)
-        self.root.geometry("96x96+20+20")
+        self.root.geometry(f"{WIDGET_SIZE}x{WIDGET_SIZE}+20+20")
         self.root.resizable(False, False)
         self.root.attributes("-topmost", True)
         self.root.configure(bg=self.transparent)
@@ -78,21 +80,23 @@ class UsageWidget:
         self.refresh()
 
     def _build_ui(self):
-        self.canvas = tk.Canvas(self.root, width=96, height=96, bg=self.transparent, highlightthickness=0)
+        self.canvas = tk.Canvas(self.root, width=WIDGET_SIZE, height=WIDGET_SIZE, bg=self.transparent, highlightthickness=0)
         self.canvas.pack()
         self._draw_sphere()
 
-        self.percent = tk.Label(self.root, text="--", bg=self.surface, fg="#f4f7fb", font=("Segoe UI", 16, "bold"))
-        self.percent.place(x=20, y=32, width=56, height=23)
-        self.plan = tk.Label(self.root, text="读取中…", bg=self.surface, fg="#a7b1c2", font=("Segoe UI", 6))
-        self.plan.place(x=12, y=63, width=72, height=10)
-        self.reset = tk.Label(self.root, text="", bg=self.surface, fg="#7e8a9d", font=("Segoe UI", 6))
-        self.reset.place(x=8, y=76, width=80, height=9)
+        self.percent = tk.Label(self.root, text="--", bg=self.surface, fg="#f4f7fb", font=("Segoe UI", 17, "bold"))
+        self.percent.place(x=24, y=38, width=68, height=24)
+        self.plan = tk.Label(self.root, text="读取中…", bg=self.surface, fg="#a7b1c2", font=("Segoe UI", 7))
+        self.plan.place(x=17, y=65, width=82, height=11)
+        self.reset = tk.Label(self.root, text="", bg=self.surface, fg="#7e8a9d", font=("Segoe UI", 7))
+        self.reset.place(x=14, y=78, width=88, height=10)
 
-        self.minimize = tk.Label(self.root, text="−", bg=self.surface, fg="#aab5c5", activebackground="#2d394a", activeforeground="#ffffff", font=("Segoe UI", 8), cursor="hand2")
-        self.minimize.place(x=62, y=13, width=13, height=13)
-        self.close = tk.Label(self.root, text="×", bg=self.surface, fg="#aab5c5", activebackground="#672f3a", activeforeground="#ffffff", font=("Segoe UI", 8), cursor="hand2")
-        self.close.place(x=76, y=13, width=13, height=13)
+        button_style = {"bg": self.transparent, "fg": "#aab5c5", "activebackground": "#263246", "activeforeground": "#ffffff", "font": ("Segoe UI", 9), "cursor": "hand2"}
+        self.minimize = tk.Label(self.root, text="−", **button_style)
+        self.minimize.place(x=91, y=1, width=12, height=14)
+        close_style = {**button_style, "activebackground": "#672f3a", "font": ("Segoe UI", 10)}
+        self.close = tk.Label(self.root, text="×", **close_style)
+        self.close.place(x=103, y=1, width=12, height=14)
         self.minimize.bind("<Button-1>", lambda _event: self.root.iconify())
         self.close.bind("<Button-1>", lambda _event: self.root.destroy())
         for widget in (self.canvas, self.percent, self.plan, self.reset):
@@ -101,13 +105,14 @@ class UsageWidget:
 
     def _draw_sphere(self):
         self.canvas.delete("all")
-        self.canvas.create_oval(5, 7, 93, 95, fill="#080b10", outline="")
-        self.canvas.create_oval(2, 2, 94, 94, fill="#202938", outline="#3a485d", width=1)
-        self.canvas.create_oval(6, 6, 90, 90, fill=self.surface, outline="")
-        self.canvas.create_arc(12, 9, 84, 81, start=210, extent=125, style="arc", outline="#526078", width=2)
-        self.canvas.create_arc(10, 10, 86, 86, start=90, extent=359, style="arc", outline="#2a3545", width=7)
+        left, top, right, bottom = SPHERE_BOX
+        self.canvas.create_oval(left + 3, top + 4, right + 3, bottom + 4, fill="#080b10", outline="")
+        self.canvas.create_oval(left, top, right, bottom, fill="#202938", outline="#3a485d", width=1)
+        self.canvas.create_oval(left + 5, top + 5, right - 5, bottom - 5, fill=self.surface, outline="")
+        self.canvas.create_arc(left + 9, top + 7, right - 9, top + 79, start=210, extent=125, style="arc", outline="#526078", width=2)
+        self.canvas.create_arc(left + 8, top + 8, right - 8, bottom - 8, start=90, extent=359, style="arc", outline="#2a3545", width=8)
         if self._progress > 0:
-            self.canvas.create_arc(10, 10, 86, 86, start=90, extent=-3.6 * self._progress, style="arc", outline=self._progress_color, width=7)
+            self.canvas.create_arc(left + 8, top + 8, right - 8, bottom - 8, start=90, extent=-3.6 * self._progress, style="arc", outline=self._progress_color, width=8)
 
     def _drag_start(self, event):
         self._drag_offset = (event.x_root - self.root.winfo_x(), event.y_root - self.root.winfo_y())

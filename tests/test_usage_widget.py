@@ -1,10 +1,15 @@
 import unittest
 from datetime import datetime, timezone
 
-from usage_widget import parse_usage, format_reset
+from usage_widget import parse_usage, format_reset, WIDGET_SIZE, SPHERE_BOX
 
 
 class UsageWidgetTests(unittest.TestCase):
+    def test_orb_layout_has_transparent_outer_ring(self):
+        self.assertEqual(WIDGET_SIZE, 116)
+        self.assertEqual(SPHERE_BOX, (10, 10, 106, 106))
+        self.assertGreater(SPHERE_BOX[0], 0)
+
     def test_parse_usage_returns_remaining_percent_and_plan(self):
         data = {
             "plan_type": "plus",
